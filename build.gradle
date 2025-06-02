@@ -6,16 +6,15 @@ plugins {
 
 group = 'com'
 version = '0.0.1-SNAPSHOT'
+description = 'Desafio técnico Agrotis - 2025).'
+
+apply from: 'gradle/config/source-sets.gradle'
+apply from: 'gradle/config/config.gradle'
+apply from: 'gradle/config/task.gradle'
 
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(21)
-	}
-}
-
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
 	}
 }
 
@@ -38,3 +37,8 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+tasks.withType(Copy).all {
+	duplicatesStrategy = 'exclude'
+}
+
