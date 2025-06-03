@@ -5,12 +5,12 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
-public record PropriedadeDtoRequest(
+public record LaboratorioDtoRequest(
 
-        @Schema(name = "propriedadeId", description = "Identificador único do recurso.",
+        @Schema(name = "laboratorioId", description = "Identificador único do recurso.",
                 example = "034eb74c-69ee-4bd4-a064-5c4cc5e9e748")
         @NotNull
-        UUID propriedadeId
+        UUID laboratorioId
 ) {
 }
 

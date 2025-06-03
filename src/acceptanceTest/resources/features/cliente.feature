@@ -10,12 +10,16 @@ Funcionalidade: testar operações Crud (Create/Post, Read/Get, Update/Put e Del
     |        nome        |
     |    Fazenda XT2     |
     |    Fazenda HR5     |
+    Dado cadastros de Laboratórios disponíveis no banco de dados
+    |        nome        |
+    |  Laboratorio XT2   |
+    |  Laboratorio HR5   |
 
   Cenario: Post para criar Cliente, com sucesso, pelo ClienteController
-    Dado um ClienteDtoRequest, com nome "Robert Martin" e dataInicial "03/06/2025" e dataFinal "03/07/2025" e observações "Observação de teste", e ProprietarioDtoRequest, com nome "Fazenda XT2"
+    Dado um ClienteDtoRequest, com nome "Robert Martin" e dataInicial "03/06/2025" e dataFinal "03/07/2025" e observações "Observação de teste", e ProprietarioDtoRequest, com nome "Fazenda XT2", e LaboratorioDtoRequest, com nome "Laboratorio XT2"
     Quando a requisição Post for feita no ClienteController
     Entao receber resposta HTTP 201 do ClienteController
-    E com Cliente, com nome "Robert Martin" e dataInicial "03/06/2025" e dataFinal "03/07/2025" e observações "Observação de teste", e Proprietario, com nome "Fazenda XT2", no body da resposta do ClienteController
+    E com Cliente, com nome "Robert Martin" e dataInicial "03/06/2025" e dataFinal "03/07/2025" e observações "Observação de teste", e Proprietario, com nome "Fazenda XT2", e LaboratorioDtoRequest, com nome "Laboratorio XT2", no body da resposta do ClienteController
     E o Cliente corretamente cadastrado no banco de dados, com nome "Robert Martin" e dataInicial "03/06/2025" e dataFinal "03/07/2025" e observações "Observação de teste"
 
 

@@ -40,6 +40,10 @@ public final class ClienteEntity implements Serializable {
     @JoinColumn(name = "propriedade_id")
     private PropriedadeEntity propriedade;
 
+    @OneToOne
+    @JoinColumn(name = "laboratorio_id")
+    private LaboratorioEntity laboratorio;
+
     @Column(name = "observacoes", length = MAX_CARACTER_OBSERVACOES)
     private String observacoes;
 }

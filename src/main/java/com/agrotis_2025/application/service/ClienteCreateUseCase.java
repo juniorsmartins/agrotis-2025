@@ -2,6 +2,7 @@ package com.agrotis_2025.application.service;
 
 import com.agrotis_2025.application.port.input.ClienteCreateInputPort;
 import com.agrotis_2025.application.port.output.ClienteCreateOutputPort;
+import com.agrotis_2025.application.port.output.LaboratorioFindByIdOutputPort;
 import com.agrotis_2025.application.port.output.PropriedadeFindByIdOutputPort;
 import com.agrotis_2025.domain.model.Cliente;
 import lombok.NonNull;
@@ -16,6 +17,8 @@ public class ClienteCreateUseCase implements ClienteCreateInputPort {
 
     private final PropriedadeFindByIdOutputPort propriedadeFindByIdOutputPort;
 
+    private final LaboratorioFindByIdOutputPort laboratorioFindByIdOutputPort;
+
     private final ClienteCreateOutputPort outputPort;
 
     @Override
@@ -23,6 +26,7 @@ public class ClienteCreateUseCase implements ClienteCreateInputPort {
 
         return Optional.of(cliente)
                 .map(this::verificarPropriedade)
+                .map(this::verificarLaboratorio)
                 .map(outputPort::create)
                 .orElseThrow(RuntimeException::new);
     }
@@ -31,6 +35,14 @@ public class ClienteCreateUseCase implements ClienteCreateInputPort {
 
         var propriedade = propriedadeFindByIdOutputPort.findById(cliente.getPropriedade().getPropriedadeId());
         cliente.setPropriedade(propriedade);
+
+        return cliente;
+    }
+
+    private Cliente verificarLaboratorio(Cliente cliente) {
+
+        var laboratorio = laboratorioFindByIdOutputPort.findById(cliente.getLaboratorio().getLaboratorioId());
+        cliente.setLaboratorio(laboratorio);
 
         return cliente;
     }

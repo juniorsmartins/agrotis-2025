@@ -24,6 +24,8 @@ public final class Cliente {
 
     private Propriedade propriedade;
 
+    private Laboratorio laboratorio;
+
     private String observacoes;
 }
 

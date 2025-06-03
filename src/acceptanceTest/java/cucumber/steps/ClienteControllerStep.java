@@ -1,10 +1,13 @@
 package cucumber.steps;
 
 import com.agrotis_2025.infrastructure.adapter.in.dto.request.ClienteDtoRequest;
+import com.agrotis_2025.infrastructure.adapter.in.dto.request.LaboratorioDtoRequest;
 import com.agrotis_2025.infrastructure.adapter.in.dto.request.PropriedadeDtoRequest;
 import com.agrotis_2025.infrastructure.adapter.in.dto.response.ClienteDtoResponse;
 import com.agrotis_2025.infrastructure.adapter.out.persistence.ClienteRepository;
+import com.agrotis_2025.infrastructure.adapter.out.persistence.LaboratorioRepository;
 import com.agrotis_2025.infrastructure.adapter.out.persistence.PropriedadeRepository;
+import com.agrotis_2025.infrastructure.adapter.out.persistence.entity.LaboratorioEntity;
 import com.agrotis_2025.infrastructure.adapter.out.persistence.entity.PropriedadeEntity;
 import cucumber.config.ConstantsTest;
 import io.cucumber.java.Before;
@@ -44,6 +47,9 @@ public final class ClienteControllerStep {
     @Autowired
     private PropriedadeRepository propriedadeRepository;
 
+    @Autowired
+    private LaboratorioRepository laboratorioRepository;
+
     private ClienteDtoRequest clienteDtoRequest;
 
     private ClienteDtoResponse clienteDtoResponse;
@@ -70,6 +76,7 @@ public final class ClienteControllerStep {
 
     @Dado("cadastros de Propriedades disponíveis no banco de dados")
     public void cadastros_de_propriedades_disponiveis_no_banco_de_dados(io.cucumber.datatable.DataTable dataTable) {
+
         propriedadeRepository.deleteAll();
 
         List<Map<String, String>> dados = dataTable.asMaps(String.class, String.class);
@@ -83,17 +90,37 @@ public final class ClienteControllerStep {
         }
     }
 
-    @Dado("um ClienteDtoRequest, com nome {string} e dataInicial {string} e dataFinal {string} e observações {string}, e ProprietarioDtoRequest, com nome {string}")
-    public void um_cliente_dto_request_com_nome_e_data_inicial_e_data_final_e_observações_e_proprietario_dto_request_com_nome(
-            String nome, String dataInicial, String dataFinal, String observacoes, String nomePropriedade) {
+    @Dado("cadastros de Laboratórios disponíveis no banco de dados")
+    public void cadastros_de_laboratorios_disponiveis_no_banco_de_dados(io.cucumber.datatable.DataTable dataTable) {
+
+        laboratorioRepository.deleteAll();
+
+        List<Map<String, String>> dados = dataTable.asMaps(String.class, String.class);
+
+        for (Map<String, String> row : dados) {
+
+            LaboratorioEntity entity = new LaboratorioEntity();
+            entity.setNome(row.get("nome"));
+
+            laboratorioRepository.save(entity);
+        }
+    }
+
+    @Dado("um ClienteDtoRequest, com nome {string} e dataInicial {string} e dataFinal {string} e observações {string}, e ProprietarioDtoRequest, com nome {string}, e LaboratorioDtoRequest, com nome {string}")
+    public void um_cliente_dto_request_com_nome_e_data_inicial_e_data_final_e_observacoes_e_proprietario_dto_request_com_nome(
+            String nome, String dataInicial, String dataFinal, String observacoes, String nomePropriedade, String nomeLaboratorio) {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         var propriedadeEntity = propriedadeRepository.findByNome(nomePropriedade).get();
         var propriedadeDtoRequest = new PropriedadeDtoRequest(propriedadeEntity.getPropriedadeId());
 
+        var laboratorioEntity = laboratorioRepository.findByNome(nomeLaboratorio).get();
+        var laboratorioDtoRequest = new LaboratorioDtoRequest(laboratorioEntity.getLaboratorioId());
+
         clienteDtoRequest = new ClienteDtoRequest(
-                nome, LocalDate.parse(dataInicial, formatter), LocalDate.parse(dataFinal, formatter), propriedadeDtoRequest, observacoes);
+                nome, LocalDate.parse(dataInicial, formatter), LocalDate.parse(dataFinal, formatter),
+                propriedadeDtoRequest, laboratorioDtoRequest, observacoes);
         assertThat(clienteDtoRequest).isNotNull();
     }
 
@@ -116,9 +143,9 @@ public final class ClienteControllerStep {
         assertEquals(status, response.getStatusCode());
     }
 
-    @Entao("com Cliente, com nome {string} e dataInicial {string} e dataFinal {string} e observações {string}, e Proprietario, com nome {string}, no body da resposta do ClienteController")
-    public void com_cliente_com_nome_e_data_inicial_e_data_final_e_observacoes_e_proprietario_com_nome_no_body_da_resposta_do_cliente_controller(
-            String nome, String dataInicial, String dataFinal, String observacoes, String nomePropriedade) {
+    @Entao("com Cliente, com nome {string} e dataInicial {string} e dataFinal {string} e observações {string}, e Proprietario, com nome {string}, e LaboratorioDtoRequest, com nome {string}, no body da resposta do ClienteController")
+    public void com_cliente_com_nome_e_data_inicial_e_data_final_e_observacoes_e_proprietario_com_nome_e_laboratorio_dto_request_com_nome_no_body_da_resposta_do_cliente_controller(
+            String nome, String dataInicial, String dataFinal, String observacoes, String nomePropriedade, String nomeLaboratorio) {
 
         clienteDtoResponse = response.as(ClienteDtoResponse.class);
 
@@ -130,6 +157,8 @@ public final class ClienteControllerStep {
         assertThat(clienteDtoResponse.dataFinal()).isEqualTo(LocalDate.parse(dataFinal, formatter));
         assertThat(clienteDtoResponse.propriedade().propriedadeId()).isNotNull();
         assertThat(clienteDtoResponse.propriedade().nome()).isEqualTo(nomePropriedade);
+        assertThat(clienteDtoResponse.laboratorio().laboratorioId()).isNotNull();
+        assertThat(clienteDtoResponse.laboratorio().nome()).isEqualTo(nomeLaboratorio);
         assertThat(clienteDtoResponse.observacoes()).isEqualTo(observacoes);
     }
 

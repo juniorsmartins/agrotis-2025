@@ -26,6 +26,9 @@ public record ClienteDtoResponse(
         @Schema(name = "Propriedade", description = "Relação do Cliente com a Propriedade.")
         PropriedadeDtoResponse propriedade,
 
+        @Schema(name = "Laboratório", description = "Relação do Cliente com a Laboratório.")
+        LaboratorioDtoResponse laboratorio,
+
         @Schema(name = "Observações", description = "Espaço para informações adicionais.",
                 example = "Observação de teste")
         String observacoes
