@@ -1,6 +1,7 @@
 package com.agrotis_2025.infrastructure.adapter.out.persistence;
 
 import com.agrotis_2025.application.port.output.PropriedadeFindByIdOutputPort;
+import com.agrotis_2025.domain.exception.http404.PropriedadeNotFoundException;
 import com.agrotis_2025.domain.model.Propriedade;
 import com.agrotis_2025.infrastructure.adapter.out.mapper.PersistenceMapper;
 import lombok.NonNull;
@@ -23,7 +24,7 @@ public class PropriedadeFindByIdAdapter implements PropriedadeFindByIdOutputPort
     public Propriedade findById(@NonNull final UUID id) {
         return repository.findById(id)
                 .map(mapper::toPropriedadeIn)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new PropriedadeNotFoundException(id));
     }
 }
 

@@ -26,6 +26,7 @@ import javax.sql.DataSource;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -76,6 +77,7 @@ public final class ClienteControllerStep {
     @Dado("cadastros de Propriedades disponíveis no banco de dados")
     public void cadastros_de_propriedades_disponiveis_no_banco_de_dados(io.cucumber.datatable.DataTable dataTable) {
 
+        clienteRepository.deleteAll();
         propriedadeRepository.deleteAll();
 
         List<Map<String, String>> dados = dataTable.asMaps(String.class, String.class);
@@ -92,6 +94,7 @@ public final class ClienteControllerStep {
     @Dado("cadastros de Laboratórios disponíveis no banco de dados")
     public void cadastros_de_laboratorios_disponiveis_no_banco_de_dados(io.cucumber.datatable.DataTable dataTable) {
 
+        clienteRepository.deleteAll();
         laboratorioRepository.deleteAll();
 
         List<Map<String, String>> dados = dataTable.asMaps(String.class, String.class);
@@ -167,6 +170,36 @@ public final class ClienteControllerStep {
         assertThat(entity.getDataInicial()).isEqualTo(ZonedDateTime.parse(dataInicial));
         assertThat(entity.getDataFinal()).isEqualTo(ZonedDateTime.parse(dataFinal));
         assertThat(entity.getObservacoes()).isEqualTo(observacoes);
+    }
+
+    @Dado("um ClienteDtoRequest, com nome {string} e dataInicial {string} e dataFinal {string} e observações {string}, e ProprietarioDtoRequest inexistente e LaboratorioDtoRequest, com nome {string}")
+    public void um_cliente_dto_request_com_nome_e_data_inicial_e_data_final_e_observacoes_e_proprietario_dto_request_inexistente_e_laboratorio_dto_request_com_nome(
+            String nome, String dataInicial, String dataFinal, String observacoes, String nomeLaboratorio) {
+
+        var propriedadeDtoRequest = new PropriedadeDtoRequest(UUID.randomUUID());
+
+        var laboratorioEntity = laboratorioRepository.findByNome(nomeLaboratorio).get();
+        var laboratorioDtoRequest = new LaboratorioDtoRequest(laboratorioEntity.getLaboratorioId());
+
+        clienteDtoRequest = new ClienteDtoRequest(
+                nome, ZonedDateTime.parse(dataInicial), ZonedDateTime.parse(dataFinal),
+                propriedadeDtoRequest, laboratorioDtoRequest, observacoes);
+        assertThat(clienteDtoRequest).isNotNull();
+    }
+
+    @Dado("um ClienteDtoRequest, com nome {string} e dataInicial {string} e dataFinal {string} e observações {string}, e Proprietario, com nome {string}, e LaboratorioDtoRequest inexistente")
+    public void um_cliente_dto_request_com_nome_e_data_inicial_e_data_final_e_observações_e_proprietario_com_nome_e_laboratorio_dto_request_inexistente(
+            String nome, String dataInicial, String dataFinal, String observacoes, String nomePropriedade) {
+
+        var propriedadeEntity = propriedadeRepository.findByNome(nomePropriedade).get();
+        var propriedadeDtoRequest = new PropriedadeDtoRequest(propriedadeEntity.getPropriedadeId());
+
+        var laboratorioDtoRequest = new LaboratorioDtoRequest(UUID.randomUUID());
+
+        clienteDtoRequest = new ClienteDtoRequest(
+                nome, ZonedDateTime.parse(dataInicial), ZonedDateTime.parse(dataFinal),
+                propriedadeDtoRequest, laboratorioDtoRequest, observacoes);
+        assertThat(clienteDtoRequest).isNotNull();
     }
 }
 

@@ -22,5 +22,12 @@ Funcionalidade: testar operações Crud (Create/Post, Read/Get, Update/Put e Del
     E com Cliente, com nome "Robert Martin" e dataInicial "2025-06-05T09:00:00Z" e dataFinal "2025-07-05T09:00:00Z" e observações "Observação de teste", e Proprietario, com nome "Fazenda XT2", e LaboratorioDtoRequest, com nome "Laboratorio XT2", no body da resposta do ClienteController
     E o Cliente corretamente cadastrado no banco de dados, com nome "Robert Martin" e dataInicial "2025-06-05T09:00:00Z" e dataFinal "2025-07-05T09:00:00Z" e observações "Observação de teste"
 
+  Cenario: Post para criar Cliente, com erro 404 not found de Propriedade, pelo ClienteController
+    Dado um ClienteDtoRequest, com nome "Robert Martin" e dataInicial "2025-06-05T09:00:00Z" e dataFinal "2025-07-05T09:00:00Z" e observações "Observação de teste", e ProprietarioDtoRequest inexistente e LaboratorioDtoRequest, com nome "Laboratorio XT2"
+    Quando a requisição Post for feita no ClienteController
+    Entao receber resposta HTTP 404 do ClienteController
 
-
+  Cenario: Post para criar Cliente, com erro 404 not found de Laboratório, pelo ClienteController
+    Dado um ClienteDtoRequest, com nome "Robert Martin" e dataInicial "2025-06-05T09:00:00Z" e dataFinal "2025-07-05T09:00:00Z" e observações "Observação de teste", e Proprietario, com nome "Fazenda XT2", e LaboratorioDtoRequest inexistente
+    Quando a requisição Post for feita no ClienteController
+    Entao receber resposta HTTP 404 do ClienteController
