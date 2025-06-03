@@ -5,25 +5,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public final class Cliente {
+public final class Propriedade {
 
-    private UUID clienteId;
+    private UUID propriedadeId;
 
     private String nome;
-
-    private LocalDate dataInicial;
-
-    private LocalDate dataFinal;
-
-    private Propriedade propriedade;
-
-    private String observacoes;
 }
 

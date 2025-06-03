@@ -1,8 +1,11 @@
 package com.agrotis_2025.infrastructure.adapter.in.mapper;
 
 import com.agrotis_2025.domain.model.Cliente;
+import com.agrotis_2025.domain.model.Propriedade;
 import com.agrotis_2025.infrastructure.adapter.in.dto.request.ClienteDtoRequest;
+import com.agrotis_2025.infrastructure.adapter.in.dto.request.PropriedadeDtoRequest;
 import com.agrotis_2025.infrastructure.adapter.in.dto.response.ClienteDtoResponse;
+import com.agrotis_2025.infrastructure.adapter.in.dto.response.PropriedadeDtoResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -13,5 +16,10 @@ public interface RestMapper {
     Cliente toDomain(ClienteDtoRequest dtoRequest);
 
     ClienteDtoResponse toResponse(Cliente cliente);
+
+    @Mapping(target = "nome", ignore = true)
+    Propriedade toPropriedade(PropriedadeDtoRequest dtoRequest);
+
+    PropriedadeDtoResponse toPropriedadeDtoResponse(Propriedade propriedade);
 }
 

@@ -23,6 +23,9 @@ public record ClienteDtoResponse(
         @Schema(name = "DataFinal", description = "Data de fim.", example = "10/12/2025")
         LocalDate dataFinal,
 
+        @Schema(name = "Propriedade", description = "Relação do Cliente com a Propriedade.")
+        PropriedadeDtoResponse propriedade,
+
         @Schema(name = "Observações", description = "Espaço para informações adicionais.",
                 example = "Observação de teste")
         String observacoes

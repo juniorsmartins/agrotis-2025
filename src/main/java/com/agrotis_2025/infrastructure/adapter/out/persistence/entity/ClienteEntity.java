@@ -36,6 +36,10 @@ public final class ClienteEntity implements Serializable {
     @Column(name = "dataFinal", nullable = false)
     private LocalDate dataFinal;
 
+    @OneToOne
+    @JoinColumn(name = "propriedade_id")
+    private PropriedadeEntity propriedade;
+
     @Column(name = "observacoes", length = MAX_CARACTER_OBSERVACOES)
     private String observacoes;
 }

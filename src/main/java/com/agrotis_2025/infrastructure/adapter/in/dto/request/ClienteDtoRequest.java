@@ -27,6 +27,9 @@ public record ClienteDtoRequest(
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
         LocalDate dataFinal,
 
+        @Schema(name = "Propriedade", description = "Relação do Cliente com a Propriedade.")
+        PropriedadeDtoRequest propriedade,
+
         @Schema(name = "Observações", description = "Espaço para informações adicionais.",
                 example = "Observação de teste")
         @NotBlank
