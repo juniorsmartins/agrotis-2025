@@ -7,6 +7,7 @@ import com.agrotis_2025.infrastructure.adapter.in.dto.response.ClienteDtoRespons
 import com.agrotis_2025.infrastructure.adapter.out.persistence.ClienteRepository;
 import com.agrotis_2025.infrastructure.adapter.out.persistence.LaboratorioRepository;
 import com.agrotis_2025.infrastructure.adapter.out.persistence.PropriedadeRepository;
+import com.agrotis_2025.infrastructure.adapter.out.persistence.entity.ClienteEntity;
 import com.agrotis_2025.infrastructure.adapter.out.persistence.entity.LaboratorioEntity;
 import com.agrotis_2025.infrastructure.adapter.out.persistence.entity.PropriedadeEntity;
 import cucumber.config.ConstantsTest;
@@ -55,6 +56,8 @@ public final class ClienteControllerStep {
     private ClienteDtoResponse clienteDtoResponse;
 
     private Response response;
+
+    private ClienteEntity clienteEntity;
 
     @Before
     public void setUp() {
@@ -105,6 +108,31 @@ public final class ClienteControllerStep {
             entity.setNome(row.get("nome"));
 
             laboratorioRepository.save(entity);
+        }
+    }
+
+    @Dado("cadastros de Clientes disponíveis no banco de dados")
+    public void cadastros_de_clientes_disponiveis_no_banco_de_dados(io.cucumber.datatable.DataTable dataTable) {
+
+        clienteRepository.deleteAll();
+
+        List<Map<String, String>> dados = dataTable.asMaps(String.class, String.class);
+
+        for (Map<String, String> row : dados) {
+
+            var cliente = new ClienteEntity();
+            cliente.setNome(row.get("nome"));
+            cliente.setDataInicial(ZonedDateTime.parse(row.get("dataInicial")));
+            cliente.setDataFinal(ZonedDateTime.parse(row.get("dataFinal")));
+            cliente.setObservacoes(row.get("observacoes"));
+
+            var propriedade = propriedadeRepository.findByNome(row.get("nomePropriedade")).get();
+            var laboratorio = laboratorioRepository.findByNome(row.get("nomeLaboratorio")).get();
+
+            cliente.setPropriedade(propriedade);
+            cliente.setLaboratorio(laboratorio);
+
+            clienteRepository.save(cliente);
         }
     }
 
@@ -200,6 +228,41 @@ public final class ClienteControllerStep {
                 nome, ZonedDateTime.parse(dataInicial), ZonedDateTime.parse(dataFinal),
                 propriedadeDtoRequest, laboratorioDtoRequest, observacoes);
         assertThat(clienteDtoRequest).isNotNull();
+    }
+
+    @Dado("um identificador ID de um cliente existente, com nome {string}")
+    public void um_identificador_id_de_um_cliente_existente_com_nome(String nome) {
+
+        clienteEntity = clienteRepository.findByNome(nome).get();
+        assertThat(clienteEntity).isNotNull();
+    }
+
+    @Quando("uma requisição Get for feita no método findById do ClienteController")
+    public void uma_requisicao_get_for_feita_no_metodo_find_by_id_do_cliente_controller() {
+
+        response = RestAssured
+                .given().spec(requestSpecification)
+                .contentType(ConstantsTest.CONTENT_TYPE_JSON)
+                .when()
+                .get("/" + clienteEntity.getClienteId());
+
+        assertThat(response).isNotNull();
+    }
+
+    @Entao("com ClienteDtoResponse no body, com id e nome {string} e dataInicial {string} e dataFinal {string} e observações {string}, e Proprietario, com nome {string}, e LaboratorioDtoRequest, com nome {string}, no body da resposta do ClienteController")
+    public void com_cliente_dto_response_no_body_com_id_e_nome_e_data_inicial_e_data_final_e_observacoes_e_proprietario_com_nome_e_laboratorio_dto_request_com_nome_no_body_da_resposta_do_cliente_controller(
+            String string, String string2, String string3, String string4, String string5, String string6) {
+
+
+    }
+
+    @Dado("um identificador ID de um cliente inexistente")
+    public void um_identificador_id_de_um_cliente_inexistente() {
+
+        clienteEntity = new ClienteEntity();
+        clienteEntity.setClienteId(UUID.randomUUID());
+
+        assertThat(clienteEntity.getClienteId()).isNotNull();
     }
 }
 

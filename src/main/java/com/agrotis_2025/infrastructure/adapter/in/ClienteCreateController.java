@@ -1,6 +1,7 @@
 package com.agrotis_2025.infrastructure.adapter.in;
 
 import com.agrotis_2025.application.port.input.ClienteCreateInputPort;
+import com.agrotis_2025.domain.exception.http500.InternalServerProblemException;
 import com.agrotis_2025.infrastructure.adapter.in.dto.request.ClienteDtoRequest;
 import com.agrotis_2025.infrastructure.adapter.in.dto.response.ClienteDtoResponse;
 import com.agrotis_2025.infrastructure.adapter.in.mapper.RestMapper;
@@ -30,7 +31,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(path = {ConstantsController.URI_CLIENTE})
-public class ClienteController {
+public class ClienteCreateController {
 
     private final RestMapper restMapper;
 
@@ -73,8 +74,8 @@ public class ClienteController {
                 .map(inputPort::create)
                 .map(restMapper::toResponse)
                 .orElseThrow(() -> {
-                    log.error("AbstractUsuarioCreateController - Erro interno do servidor no método create.");
-                    return new RuntimeException();
+                    log.error("ClienteCreateController - Erro interno do servidor no método create.");
+                    return new InternalServerProblemException();
                 });
 
         return ResponseEntity

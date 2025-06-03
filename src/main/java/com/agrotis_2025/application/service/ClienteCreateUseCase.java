@@ -4,6 +4,7 @@ import com.agrotis_2025.application.port.input.ClienteCreateInputPort;
 import com.agrotis_2025.application.port.output.ClienteCreateOutputPort;
 import com.agrotis_2025.application.port.output.LaboratorioFindByIdOutputPort;
 import com.agrotis_2025.application.port.output.PropriedadeFindByIdOutputPort;
+import com.agrotis_2025.domain.exception.http500.InternalServerProblemException;
 import com.agrotis_2025.domain.model.Cliente;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class ClienteCreateUseCase implements ClienteCreateInputPort {
                 .map(this::verificarPropriedade)
                 .map(this::verificarLaboratorio)
                 .map(outputPort::create)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(InternalServerProblemException::new);
     }
 
     private Cliente verificarPropriedade(Cliente cliente) {
