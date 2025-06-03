@@ -40,6 +40,11 @@ Funcionalidade: testar operações Crud (Create/Post, Read/Get, Update/Put e Del
     Quando a requisição Post for feita no ClienteController
     Entao receber resposta HTTP 404 do ClienteController
 
+  Cenario: Post para criar Cliente, com erro 400 por nome vazio, pelo ClienteController
+    Dado um ClienteDtoRequest, com nome "   " e dataInicial "2025-06-05T09:00:00Z" e dataFinal "2025-07-05T09:00:00Z" e observações "Observação de teste", e PropriedadeDtoRequest, com nome "Fazenda XT2", e LaboratorioDtoRequest, com nome "Laboratorio XT2"
+    Quando a requisição Post for feita no ClienteController
+    Entao receber resposta HTTP 400 do ClienteController
+
 
   Cenario: Get para consultar Cliente, com sucesso, pelo ClienteController
     Dado um identificador ID de um cliente existente, com nome "Jeff Sutherland"
