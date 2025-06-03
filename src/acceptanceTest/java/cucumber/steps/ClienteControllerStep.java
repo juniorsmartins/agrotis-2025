@@ -249,13 +249,6 @@ public final class ClienteControllerStep {
         assertThat(response).isNotNull();
     }
 
-    @Entao("com ClienteDtoResponse no body, com id e nome {string} e dataInicial {string} e dataFinal {string} e observações {string}, e Proprietario, com nome {string}, e LaboratorioDtoRequest, com nome {string}, no body da resposta do ClienteController")
-    public void com_cliente_dto_response_no_body_com_id_e_nome_e_data_inicial_e_data_final_e_observacoes_e_proprietario_com_nome_e_laboratorio_dto_request_com_nome_no_body_da_resposta_do_cliente_controller(
-            String string, String string2, String string3, String string4, String string5, String string6) {
-
-
-    }
-
     @Dado("um identificador ID de um cliente inexistente")
     public void um_identificador_id_de_um_cliente_inexistente() {
 
@@ -263,6 +256,25 @@ public final class ClienteControllerStep {
         clienteEntity.setClienteId(UUID.randomUUID());
 
         assertThat(clienteEntity.getClienteId()).isNotNull();
+    }
+
+    @Quando("uma requisição Delete for feita no método deleteById do ClienteController")
+    public void uma_requisicao_delete_for_feita_no_metodo_delete_by_id_do_cliente_controller() {
+
+        response = RestAssured
+                .given().spec(requestSpecification)
+                .contentType(ConstantsTest.CONTENT_TYPE_JSON)
+                .when()
+                .delete("/" + clienteEntity.getClienteId());
+
+        assertThat(response).isNotNull();
+    }
+
+    @Entao("o Cliente foi apagado do banco de dados pelo ClienteController")
+    public void o_cliente_foi_apagado_do_banco_de_dados_pelo_cliente_controller() {
+
+        var response = clienteRepository.findById(clienteEntity.getClienteId());
+        assertThat(response).isEmpty();
     }
 }
 
