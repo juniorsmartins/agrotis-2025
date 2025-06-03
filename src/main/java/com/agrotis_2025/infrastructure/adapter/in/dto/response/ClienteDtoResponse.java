@@ -2,12 +2,9 @@ package com.agrotis_2025.infrastructure.adapter.in.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 
+import java.time.LocalDate;
 import java.util.UUID;
-
-import static com.agrotis_2025.infrastructure.constant.ConstantsValidation.MAX_CARACTER_OBSERVACOES;
 
 @Schema(name = "ClienteDtoResponse", description = "Transportador de dados de saída.")
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -18,12 +15,16 @@ public record ClienteDtoResponse(
         UUID clienteId,
 
         @Schema(name = "Nome", description = "Nome do cliente.", example = "Robert Martin")
-        @NotBlank
         String nome,
 
-        @Schema(name = "Observações", description = "Espaço para informações adicionais.", example = "Observação de teste")
-        @NotBlank
-        @Size(max = MAX_CARACTER_OBSERVACOES)
+        @Schema(name = "DataInicial", description = "Data de início.", example = "05/06/2025")
+        LocalDate dataInicial,
+
+        @Schema(name = "DataFinal", description = "Data de fim.", example = "10/12/2025")
+        LocalDate dataFinal,
+
+        @Schema(name = "Observações", description = "Espaço para informações adicionais.",
+                example = "Observação de teste")
         String observacoes
 ) {
 }

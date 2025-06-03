@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.UUID;
 
 import static com.agrotis_2025.infrastructure.constant.ConstantsValidation.MAX_CARACTER_OBSERVACOES;
@@ -28,6 +29,12 @@ public final class ClienteEntity implements Serializable {
 
     @Column(name = "nome", nullable = false)
     private String nome;
+
+    @Column(name = "dataInicial", nullable = false)
+    private LocalDate dataInicial;
+
+    @Column(name = "dataFinal", nullable = false)
+    private LocalDate dataFinal;
 
     @Column(name = "observacoes", length = MAX_CARACTER_OBSERVACOES)
     private String observacoes;

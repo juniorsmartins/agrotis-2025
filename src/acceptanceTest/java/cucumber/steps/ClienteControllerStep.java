@@ -17,6 +17,8 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -58,10 +60,14 @@ public final class ClienteControllerStep {
         assertThat(count).isNotNull();
     }
 
-    @Dado("um ClienteDtoRequest, com nome {string} e observações {string}")
-    public void um_cliente_dto_request_com_nome_e_observacoes(String nome, String observacoes) {
+    @Dado("um ClienteDtoRequest, com nome {string} e dataInicial {string} e dataFinal {string} e observações {string}")
+    public void um_cliente_dto_request_com_nome_e_data_inicial_e_data_final_e_observacoes(
+            String nome, String dataInicial, String dataFinal, String observacoes) {
 
-        clienteDtoRequest = new ClienteDtoRequest(nome, observacoes);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        clienteDtoRequest = new ClienteDtoRequest(
+                nome, LocalDate.parse(dataInicial, formatter), LocalDate.parse(dataFinal, formatter), observacoes);
         assertThat(clienteDtoRequest).isNotNull();
     }
 
@@ -84,23 +90,35 @@ public final class ClienteControllerStep {
         assertEquals(status, response.getStatusCode());
     }
 
-    @Entao("com body na resposta, com {string} e observações {string}, do ClienteController")
-    public void com_body_na_resposta_com_e_observacoes_do_cliente_controller(String nome, String observacoes) {
+    @Entao("com body na resposta, com {string} e dataInicial {string} e dataFinal {string} e observações {string}, do ClienteController")
+    public void com_body_na_resposta_com_e_data_inicial_e_data_final_e_observacoes_do_cliente_controller(
+            String nome, String dataInicial, String dataFinal, String observacoes) {
 
         clienteDtoResponse = response.as(ClienteDtoResponse.class);
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
         assertThat(clienteDtoResponse.clienteId()).isNotNull();
         assertThat(clienteDtoResponse.nome()).isEqualTo(nome);
+        assertThat(clienteDtoResponse.dataInicial()).isEqualTo(LocalDate.parse(dataInicial, formatter));
+        assertThat(clienteDtoResponse.dataFinal()).isEqualTo(LocalDate.parse(dataFinal, formatter));
         assertThat(clienteDtoResponse.observacoes()).isEqualTo(observacoes);
     }
 
-    @Entao("o Cliente corretamente cadastrado no banco de dados, com nome {string} e observações {string}")
-    public void o_cliente_corretamente_cadastrado_no_banco_de_dados_com_nome_e_observacoes(String nome, String observacoes) {
+    @Entao("o Cliente corretamente cadastrado no banco de dados, com nome {string} e dataInicial {string} e dataFinal {string} e observações {string}")
+    public void o_cliente_corretamente_cadastrado_no_banco_de_dados_com_nome_e_data_inicial_e_data_final_e_observacoes(
+            String nome, String dataInicial, String dataFinal, String observacoes) {
 
         var entity = clienteRepository.findById(clienteDtoResponse.clienteId()).get();
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
         assertThat(entity.getNome()).isEqualTo(nome);
+        assertThat(entity.getDataInicial()).isEqualTo(LocalDate.parse(dataInicial, formatter));
+        assertThat(entity.getDataFinal()).isEqualTo(LocalDate.parse(dataFinal, formatter));
         assertThat(entity.getObservacoes()).isEqualTo(observacoes);
     }
+
+
 }
 

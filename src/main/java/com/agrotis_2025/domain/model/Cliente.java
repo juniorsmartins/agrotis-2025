@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -16,6 +17,10 @@ public final class Cliente {
     private UUID clienteId;
 
     private String nome;
+
+    private LocalDate dataInicial;
+
+    private LocalDate dataFinal;
 
     private String observacoes;
 }
