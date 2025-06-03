@@ -136,8 +136,8 @@ public final class ClienteControllerStep {
         }
     }
 
-    @Dado("um ClienteDtoRequest, com nome {string} e dataInicial {string} e dataFinal {string} e observações {string}, e ProprietarioDtoRequest, com nome {string}, e LaboratorioDtoRequest, com nome {string}")
-    public void um_cliente_dto_request_com_nome_e_data_inicial_e_data_final_e_observacoes_e_proprietario_dto_request_com_nome(
+    @Dado("um ClienteDtoRequest, com nome {string} e dataInicial {string} e dataFinal {string} e observações {string}, e PropriedadeDtoRequest, com nome {string}, e LaboratorioDtoRequest, com nome {string}")
+    public void um_cliente_dto_request_com_nome_e_data_inicial_e_data_final_e_observacoes_e_propriedade_dto_request_com_nome(
             String nome, String dataInicial, String dataFinal, String observacoes, String nomePropriedade, String nomeLaboratorio) {
 
         var propriedadeEntity = propriedadeRepository.findByNome(nomePropriedade).get();
@@ -171,8 +171,8 @@ public final class ClienteControllerStep {
         assertEquals(status, response.getStatusCode());
     }
 
-    @Entao("com Cliente, com nome {string} e dataInicial {string} e dataFinal {string} e observações {string}, e Proprietario, com nome {string}, e LaboratorioDtoRequest, com nome {string}, no body da resposta do ClienteController")
-    public void com_cliente_com_nome_e_data_inicial_e_data_final_e_observacoes_e_proprietario_com_nome_e_laboratorio_dto_request_com_nome_no_body_da_resposta_do_cliente_controller(
+    @Entao("com Cliente, com nome {string} e dataInicial {string} e dataFinal {string} e observações {string}, e Propriedade, com nome {string}, e Laboratorio, com nome {string}, no body da resposta do ClienteController")
+    public void com_cliente_com_nome_e_data_inicial_e_data_final_e_observacoes_e_propriedade_com_nome_e_laboratorio_com_nome_no_body_da_resposta_do_cliente_controller(
             String nome, String dataInicial, String dataFinal, String observacoes, String nomePropriedade, String nomeLaboratorio) {
 
         clienteDtoResponse = response.as(ClienteDtoResponse.class);
@@ -216,7 +216,7 @@ public final class ClienteControllerStep {
     }
 
     @Dado("um ClienteDtoRequest, com nome {string} e dataInicial {string} e dataFinal {string} e observações {string}, e Proprietario, com nome {string}, e LaboratorioDtoRequest inexistente")
-    public void um_cliente_dto_request_com_nome_e_data_inicial_e_data_final_e_observações_e_proprietario_com_nome_e_laboratorio_dto_request_inexistente(
+    public void um_cliente_dto_request_com_nome_e_data_inicial_e_data_final_e_observacoes_e_proprietario_com_nome_e_laboratorio_dto_request_inexistente(
             String nome, String dataInicial, String dataFinal, String observacoes, String nomePropriedade) {
 
         var propriedadeEntity = propriedadeRepository.findByNome(nomePropriedade).get();
@@ -275,6 +275,19 @@ public final class ClienteControllerStep {
 
         var response = clienteRepository.findById(clienteEntity.getClienteId());
         assertThat(response).isEmpty();
+    }
+
+    @Quando("uma requisição Put for feita no método update do ClienteController")
+    public void uma_requisicao_put_for_feita_no_metodo_update_do_cliente_controller() {
+
+        response = RestAssured
+                .given().spec(requestSpecification)
+                .contentType(ConstantsTest.CONTENT_TYPE_JSON)
+                .body(clienteDtoRequest)
+                .when()
+                .put("/" + clienteEntity.getClienteId());
+
+        assertThat(response).isNotNull();
     }
 }
 
