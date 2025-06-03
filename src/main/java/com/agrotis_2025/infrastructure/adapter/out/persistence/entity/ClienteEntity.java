@@ -5,7 +5,7 @@ import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import static com.agrotis_2025.infrastructure.constant.ConstantsValidation.MAX_CARACTER_OBSERVACOES;
@@ -31,10 +31,10 @@ public final class ClienteEntity implements Serializable {
     private String nome;
 
     @Column(name = "dataInicial", nullable = false)
-    private LocalDate dataInicial;
+    private ZonedDateTime dataInicial;
 
     @Column(name = "dataFinal", nullable = false)
-    private LocalDate dataFinal;
+    private ZonedDateTime dataFinal;
 
     @OneToOne
     @JoinColumn(name = "propriedade_id")

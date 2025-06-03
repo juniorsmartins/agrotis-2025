@@ -23,8 +23,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -110,8 +109,6 @@ public final class ClienteControllerStep {
     public void um_cliente_dto_request_com_nome_e_data_inicial_e_data_final_e_observacoes_e_proprietario_dto_request_com_nome(
             String nome, String dataInicial, String dataFinal, String observacoes, String nomePropriedade, String nomeLaboratorio) {
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
         var propriedadeEntity = propriedadeRepository.findByNome(nomePropriedade).get();
         var propriedadeDtoRequest = new PropriedadeDtoRequest(propriedadeEntity.getPropriedadeId());
 
@@ -119,7 +116,7 @@ public final class ClienteControllerStep {
         var laboratorioDtoRequest = new LaboratorioDtoRequest(laboratorioEntity.getLaboratorioId());
 
         clienteDtoRequest = new ClienteDtoRequest(
-                nome, LocalDate.parse(dataInicial, formatter), LocalDate.parse(dataFinal, formatter),
+                nome, ZonedDateTime.parse(dataInicial), ZonedDateTime.parse(dataFinal),
                 propriedadeDtoRequest, laboratorioDtoRequest, observacoes);
         assertThat(clienteDtoRequest).isNotNull();
     }
@@ -149,12 +146,10 @@ public final class ClienteControllerStep {
 
         clienteDtoResponse = response.as(ClienteDtoResponse.class);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
         assertThat(clienteDtoResponse.clienteId()).isNotNull();
         assertThat(clienteDtoResponse.nome()).isEqualTo(nome);
-        assertThat(clienteDtoResponse.dataInicial()).isEqualTo(LocalDate.parse(dataInicial, formatter));
-        assertThat(clienteDtoResponse.dataFinal()).isEqualTo(LocalDate.parse(dataFinal, formatter));
+        assertThat(clienteDtoResponse.dataInicial()).isEqualTo(ZonedDateTime.parse(dataInicial));
+        assertThat(clienteDtoResponse.dataFinal()).isEqualTo(ZonedDateTime.parse(dataFinal));
         assertThat(clienteDtoResponse.propriedade().propriedadeId()).isNotNull();
         assertThat(clienteDtoResponse.propriedade().nome()).isEqualTo(nomePropriedade);
         assertThat(clienteDtoResponse.laboratorio().laboratorioId()).isNotNull();
@@ -168,14 +163,10 @@ public final class ClienteControllerStep {
 
         var entity = clienteRepository.findById(clienteDtoResponse.clienteId()).get();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
         assertThat(entity.getNome()).isEqualTo(nome);
-        assertThat(entity.getDataInicial()).isEqualTo(LocalDate.parse(dataInicial, formatter));
-        assertThat(entity.getDataFinal()).isEqualTo(LocalDate.parse(dataFinal, formatter));
+        assertThat(entity.getDataInicial()).isEqualTo(ZonedDateTime.parse(dataInicial));
+        assertThat(entity.getDataFinal()).isEqualTo(ZonedDateTime.parse(dataFinal));
         assertThat(entity.getObservacoes()).isEqualTo(observacoes);
     }
-
-
 }
 

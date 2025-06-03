@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -18,9 +18,9 @@ public final class Cliente {
 
     private String nome;
 
-    private LocalDate dataInicial;
+    private ZonedDateTime dataInicial;
 
-    private LocalDate dataFinal;
+    private ZonedDateTime dataFinal;
 
     private Propriedade propriedade;
 

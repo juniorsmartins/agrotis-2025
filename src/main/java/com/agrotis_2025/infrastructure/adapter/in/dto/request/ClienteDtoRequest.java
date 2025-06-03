@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 
 import static com.agrotis_2025.infrastructure.constant.ConstantsValidation.MAX_CARACTER_OBSERVACOES;
 
@@ -18,15 +18,13 @@ public record ClienteDtoRequest(
         @NotBlank
         String nome,
 
-        @Schema(name = "DataInicial", description = "Data de início.", example = "05/06/2025")
+        @Schema(name = "DataInicial", description = "Data de início.", example = "2025-06-05T09:00:00Z")
         @NotNull
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
-        LocalDate dataInicial,
+        ZonedDateTime dataInicial,
 
-        @Schema(name = "DataFinal", description = "Data de fim.", example = "10/12/2025")
+        @Schema(name = "DataFinal", description = "Data de fim.", example = "2025-06-05T09:00:00Z")
         @NotNull
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
-        LocalDate dataFinal,
+        ZonedDateTime dataFinal,
 
         @Schema(name = "Propriedade", description = "Relação do Cliente com a Propriedade.")
         @NotNull
