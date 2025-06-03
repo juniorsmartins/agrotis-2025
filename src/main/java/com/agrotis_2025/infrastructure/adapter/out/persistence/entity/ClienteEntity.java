@@ -30,10 +30,10 @@ public final class ClienteEntity implements Serializable {
     @Column(name = "nome", nullable = false)
     private String nome;
 
-    @Column(name = "dataInicial", nullable = false)
+    @Column(name = "data_inicial", nullable = false)
     private ZonedDateTime dataInicial;
 
-    @Column(name = "dataFinal", nullable = false)
+    @Column(name = "data_final", nullable = false)
     private ZonedDateTime dataFinal;
 
     @OneToOne
