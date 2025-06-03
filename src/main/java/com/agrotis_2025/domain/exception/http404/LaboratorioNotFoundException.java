@@ -1,0 +1,15 @@
+package com.agrotis_2025.domain.exception.http404;
+
+import java.io.Serial;
+import java.util.UUID;
+
+public final class LaboratorioNotFoundException extends ResourceNotFoundException {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    public LaboratorioNotFoundException(final UUID id) {
+        super("exception.resource.not.found.laboratorio", id);
+    }
+}
+

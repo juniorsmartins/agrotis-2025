@@ -7,6 +7,7 @@ import com.agrotis_2025.infrastructure.adapter.in.dto.response.ClienteDtoRespons
 import com.agrotis_2025.infrastructure.adapter.out.persistence.ClienteRepository;
 import com.agrotis_2025.infrastructure.adapter.out.persistence.LaboratorioRepository;
 import com.agrotis_2025.infrastructure.adapter.out.persistence.PropriedadeRepository;
+import com.agrotis_2025.infrastructure.adapter.out.persistence.entity.ClienteEntity;
 import com.agrotis_2025.infrastructure.adapter.out.persistence.entity.LaboratorioEntity;
 import com.agrotis_2025.infrastructure.adapter.out.persistence.entity.PropriedadeEntity;
 import cucumber.config.ConstantsTest;
@@ -23,10 +24,10 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -56,6 +57,8 @@ public final class ClienteControllerStep {
 
     private Response response;
 
+    private ClienteEntity clienteEntity;
+
     @Before
     public void setUp() {
         requestSpecification = new RequestSpecBuilder()
@@ -77,6 +80,7 @@ public final class ClienteControllerStep {
     @Dado("cadastros de Propriedades disponíveis no banco de dados")
     public void cadastros_de_propriedades_disponiveis_no_banco_de_dados(io.cucumber.datatable.DataTable dataTable) {
 
+        clienteRepository.deleteAll();
         propriedadeRepository.deleteAll();
 
         List<Map<String, String>> dados = dataTable.asMaps(String.class, String.class);
@@ -93,6 +97,7 @@ public final class ClienteControllerStep {
     @Dado("cadastros de Laboratórios disponíveis no banco de dados")
     public void cadastros_de_laboratorios_disponiveis_no_banco_de_dados(io.cucumber.datatable.DataTable dataTable) {
 
+        clienteRepository.deleteAll();
         laboratorioRepository.deleteAll();
 
         List<Map<String, String>> dados = dataTable.asMaps(String.class, String.class);
@@ -106,11 +111,34 @@ public final class ClienteControllerStep {
         }
     }
 
-    @Dado("um ClienteDtoRequest, com nome {string} e dataInicial {string} e dataFinal {string} e observações {string}, e ProprietarioDtoRequest, com nome {string}, e LaboratorioDtoRequest, com nome {string}")
-    public void um_cliente_dto_request_com_nome_e_data_inicial_e_data_final_e_observacoes_e_proprietario_dto_request_com_nome(
-            String nome, String dataInicial, String dataFinal, String observacoes, String nomePropriedade, String nomeLaboratorio) {
+    @Dado("cadastros de Clientes disponíveis no banco de dados")
+    public void cadastros_de_clientes_disponiveis_no_banco_de_dados(io.cucumber.datatable.DataTable dataTable) {
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        clienteRepository.deleteAll();
+
+        List<Map<String, String>> dados = dataTable.asMaps(String.class, String.class);
+
+        for (Map<String, String> row : dados) {
+
+            var cliente = new ClienteEntity();
+            cliente.setNome(row.get("nome"));
+            cliente.setDataInicial(ZonedDateTime.parse(row.get("dataInicial")));
+            cliente.setDataFinal(ZonedDateTime.parse(row.get("dataFinal")));
+            cliente.setObservacoes(row.get("observacoes"));
+
+            var propriedade = propriedadeRepository.findByNome(row.get("nomePropriedade")).get();
+            var laboratorio = laboratorioRepository.findByNome(row.get("nomeLaboratorio")).get();
+
+            cliente.setPropriedade(propriedade);
+            cliente.setLaboratorio(laboratorio);
+
+            clienteRepository.save(cliente);
+        }
+    }
+
+    @Dado("um ClienteDtoRequest, com nome {string} e dataInicial {string} e dataFinal {string} e observações {string}, e PropriedadeDtoRequest, com nome {string}, e LaboratorioDtoRequest, com nome {string}")
+    public void um_cliente_dto_request_com_nome_e_data_inicial_e_data_final_e_observacoes_e_propriedade_dto_request_com_nome(
+            String nome, String dataInicial, String dataFinal, String observacoes, String nomePropriedade, String nomeLaboratorio) {
 
         var propriedadeEntity = propriedadeRepository.findByNome(nomePropriedade).get();
         var propriedadeDtoRequest = new PropriedadeDtoRequest(propriedadeEntity.getPropriedadeId());
@@ -119,7 +147,7 @@ public final class ClienteControllerStep {
         var laboratorioDtoRequest = new LaboratorioDtoRequest(laboratorioEntity.getLaboratorioId());
 
         clienteDtoRequest = new ClienteDtoRequest(
-                nome, LocalDate.parse(dataInicial, formatter), LocalDate.parse(dataFinal, formatter),
+                nome, ZonedDateTime.parse(dataInicial), ZonedDateTime.parse(dataFinal),
                 propriedadeDtoRequest, laboratorioDtoRequest, observacoes);
         assertThat(clienteDtoRequest).isNotNull();
     }
@@ -143,18 +171,16 @@ public final class ClienteControllerStep {
         assertEquals(status, response.getStatusCode());
     }
 
-    @Entao("com Cliente, com nome {string} e dataInicial {string} e dataFinal {string} e observações {string}, e Proprietario, com nome {string}, e LaboratorioDtoRequest, com nome {string}, no body da resposta do ClienteController")
-    public void com_cliente_com_nome_e_data_inicial_e_data_final_e_observacoes_e_proprietario_com_nome_e_laboratorio_dto_request_com_nome_no_body_da_resposta_do_cliente_controller(
+    @Entao("com Cliente, com nome {string} e dataInicial {string} e dataFinal {string} e observações {string}, e Propriedade, com nome {string}, e Laboratorio, com nome {string}, no body da resposta do ClienteController")
+    public void com_cliente_com_nome_e_data_inicial_e_data_final_e_observacoes_e_propriedade_com_nome_e_laboratorio_com_nome_no_body_da_resposta_do_cliente_controller(
             String nome, String dataInicial, String dataFinal, String observacoes, String nomePropriedade, String nomeLaboratorio) {
 
         clienteDtoResponse = response.as(ClienteDtoResponse.class);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
         assertThat(clienteDtoResponse.clienteId()).isNotNull();
         assertThat(clienteDtoResponse.nome()).isEqualTo(nome);
-        assertThat(clienteDtoResponse.dataInicial()).isEqualTo(LocalDate.parse(dataInicial, formatter));
-        assertThat(clienteDtoResponse.dataFinal()).isEqualTo(LocalDate.parse(dataFinal, formatter));
+        assertThat(clienteDtoResponse.dataInicial()).isEqualTo(ZonedDateTime.parse(dataInicial));
+        assertThat(clienteDtoResponse.dataFinal()).isEqualTo(ZonedDateTime.parse(dataFinal));
         assertThat(clienteDtoResponse.propriedade().propriedadeId()).isNotNull();
         assertThat(clienteDtoResponse.propriedade().nome()).isEqualTo(nomePropriedade);
         assertThat(clienteDtoResponse.laboratorio().laboratorioId()).isNotNull();
@@ -168,14 +194,100 @@ public final class ClienteControllerStep {
 
         var entity = clienteRepository.findById(clienteDtoResponse.clienteId()).get();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
         assertThat(entity.getNome()).isEqualTo(nome);
-        assertThat(entity.getDataInicial()).isEqualTo(LocalDate.parse(dataInicial, formatter));
-        assertThat(entity.getDataFinal()).isEqualTo(LocalDate.parse(dataFinal, formatter));
+        assertThat(entity.getDataInicial()).isEqualTo(ZonedDateTime.parse(dataInicial));
+        assertThat(entity.getDataFinal()).isEqualTo(ZonedDateTime.parse(dataFinal));
         assertThat(entity.getObservacoes()).isEqualTo(observacoes);
     }
 
+    @Dado("um ClienteDtoRequest, com nome {string} e dataInicial {string} e dataFinal {string} e observações {string}, e ProprietarioDtoRequest inexistente e LaboratorioDtoRequest, com nome {string}")
+    public void um_cliente_dto_request_com_nome_e_data_inicial_e_data_final_e_observacoes_e_proprietario_dto_request_inexistente_e_laboratorio_dto_request_com_nome(
+            String nome, String dataInicial, String dataFinal, String observacoes, String nomeLaboratorio) {
 
+        var propriedadeDtoRequest = new PropriedadeDtoRequest(UUID.randomUUID());
+
+        var laboratorioEntity = laboratorioRepository.findByNome(nomeLaboratorio).get();
+        var laboratorioDtoRequest = new LaboratorioDtoRequest(laboratorioEntity.getLaboratorioId());
+
+        clienteDtoRequest = new ClienteDtoRequest(
+                nome, ZonedDateTime.parse(dataInicial), ZonedDateTime.parse(dataFinal),
+                propriedadeDtoRequest, laboratorioDtoRequest, observacoes);
+        assertThat(clienteDtoRequest).isNotNull();
+    }
+
+    @Dado("um ClienteDtoRequest, com nome {string} e dataInicial {string} e dataFinal {string} e observações {string}, e Proprietario, com nome {string}, e LaboratorioDtoRequest inexistente")
+    public void um_cliente_dto_request_com_nome_e_data_inicial_e_data_final_e_observacoes_e_proprietario_com_nome_e_laboratorio_dto_request_inexistente(
+            String nome, String dataInicial, String dataFinal, String observacoes, String nomePropriedade) {
+
+        var propriedadeEntity = propriedadeRepository.findByNome(nomePropriedade).get();
+        var propriedadeDtoRequest = new PropriedadeDtoRequest(propriedadeEntity.getPropriedadeId());
+
+        var laboratorioDtoRequest = new LaboratorioDtoRequest(UUID.randomUUID());
+
+        clienteDtoRequest = new ClienteDtoRequest(
+                nome, ZonedDateTime.parse(dataInicial), ZonedDateTime.parse(dataFinal),
+                propriedadeDtoRequest, laboratorioDtoRequest, observacoes);
+        assertThat(clienteDtoRequest).isNotNull();
+    }
+
+    @Dado("um identificador ID de um cliente existente, com nome {string}")
+    public void um_identificador_id_de_um_cliente_existente_com_nome(String nome) {
+
+        clienteEntity = clienteRepository.findByNome(nome).get();
+        assertThat(clienteEntity).isNotNull();
+    }
+
+    @Quando("uma requisição Get for feita no método findById do ClienteController")
+    public void uma_requisicao_get_for_feita_no_metodo_find_by_id_do_cliente_controller() {
+
+        response = RestAssured
+                .given().spec(requestSpecification)
+                .contentType(ConstantsTest.CONTENT_TYPE_JSON)
+                .when()
+                .get("/" + clienteEntity.getClienteId());
+
+        assertThat(response).isNotNull();
+    }
+
+    @Dado("um identificador ID de um cliente inexistente")
+    public void um_identificador_id_de_um_cliente_inexistente() {
+
+        clienteEntity = new ClienteEntity();
+        clienteEntity.setClienteId(UUID.randomUUID());
+
+        assertThat(clienteEntity.getClienteId()).isNotNull();
+    }
+
+    @Quando("uma requisição Delete for feita no método deleteById do ClienteController")
+    public void uma_requisicao_delete_for_feita_no_metodo_delete_by_id_do_cliente_controller() {
+
+        response = RestAssured
+                .given().spec(requestSpecification)
+                .contentType(ConstantsTest.CONTENT_TYPE_JSON)
+                .when()
+                .delete("/" + clienteEntity.getClienteId());
+
+        assertThat(response).isNotNull();
+    }
+
+    @Entao("o Cliente foi apagado do banco de dados pelo ClienteController")
+    public void o_cliente_foi_apagado_do_banco_de_dados_pelo_cliente_controller() {
+
+        var response = clienteRepository.findById(clienteEntity.getClienteId());
+        assertThat(response).isEmpty();
+    }
+
+    @Quando("uma requisição Put for feita no método update do ClienteController")
+    public void uma_requisicao_put_for_feita_no_metodo_update_do_cliente_controller() {
+
+        response = RestAssured
+                .given().spec(requestSpecification)
+                .contentType(ConstantsTest.CONTENT_TYPE_JSON)
+                .body(clienteDtoRequest)
+                .when()
+                .put("/" + clienteEntity.getClienteId());
+
+        assertThat(response).isNotNull();
+    }
 }
 

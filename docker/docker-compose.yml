@@ -1,0 +1,61 @@
+name: agrotis_2025
+
+volumes:
+  database_agrotis:
+    name: database_agrotis
+
+networks:
+  net_applications:
+    name: net_applications
+    driver: bridge
+
+services:
+
+  agrotis:
+    container_name: agrotis
+    image: juniorsmartins/agrotis:v0.0.2
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        APP_NAME: "agrotis"
+        APP_VERSION: "v0.0.2"
+        APP_DESCRIPTION: "Serviço de Crud de clientes."
+    ports:
+      - "9000:9000"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    environment:
+      - DB_HOST=desafio_data_agrotis
+      - DB_NAME=agrotis
+      - DB_PORT=5432
+    restart: on-failure
+    networks:
+      - net_applications
+    depends_on:
+      desafio_data_agrotis:
+        condition: service_started
+
+  desafio_data_agrotis:
+    container_name: desafio_data_agrotis
+    image: postgres:16.0
+    ports:
+      - "5501:5432"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+    restart: on-failure
+    environment:
+      - POSTGRES_DB=agrotis
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - database_agrotis:/var/lib/postgresql/data
+    networks:
+      - net_applications
+

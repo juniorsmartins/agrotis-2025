@@ -1,6 +1,7 @@
 package com.agrotis_2025.infrastructure.adapter.out.persistence;
 
 import com.agrotis_2025.application.port.output.ClienteCreateOutputPort;
+import com.agrotis_2025.domain.exception.http500.InternalServerProblemException;
 import com.agrotis_2025.domain.model.Cliente;
 import com.agrotis_2025.infrastructure.adapter.out.mapper.PersistenceMapper;
 import lombok.NonNull;
@@ -29,7 +30,7 @@ public class ClienteCreateAdapter implements ClienteCreateOutputPort {
                 .map(mapper::toEntity)
                 .map(repository::saveAndFlush)
                 .map(mapper::toDomainIn)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(InternalServerProblemException::new);
     }
 }
 
