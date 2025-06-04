@@ -15,6 +15,8 @@ public class ConstantsTest {
 
     public static final String PATH_CHALLENGE_CLIENTE = "/api/v1/agrotis/clientes";
 
+    public static final String PATH_CHALLENGE_PROPRIEDADE = "/api/v1/agrotis/propriedades";
+
     public static final String CONTENT_TYPE_JSON = "application/json";
 }
 

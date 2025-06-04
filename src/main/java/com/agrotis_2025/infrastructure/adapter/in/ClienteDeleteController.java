@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional;
 import java.util.UUID;
 
-@Tag(name = "Clientes", description = "Contém recursos de deletar.")
+@Tag(name = "Clientes", description = "Contém recurso de deletar.")
 @Slf4j
 @RequiredArgsConstructor
 @RestController

@@ -2,13 +2,14 @@ package com.agrotis_2025.infrastructure.adapter.out.persistence;
 
 import com.agrotis_2025.infrastructure.adapter.out.persistence.entity.PropriedadeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface PropriedadeRepository extends JpaRepository<PropriedadeEntity, UUID> {
+public interface PropriedadeRepository extends JpaRepository<PropriedadeEntity, UUID>, JpaSpecificationExecutor<PropriedadeEntity> {
 
     Optional<PropriedadeEntity> findByNome(String nome);
 }
