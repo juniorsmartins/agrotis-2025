@@ -5,5 +5,7 @@ public final class ConstantsController {
     public static final String URI_CLIENTE = "/api/v1/agrotis/clientes";
 
     public static final String URI_PROPRIEDADE = "/api/v1/agrotis/propriedades";
+
+    public static final String URI_LABORATORIO = "/api/v1/agrotis/laboratorios";
 }
 
