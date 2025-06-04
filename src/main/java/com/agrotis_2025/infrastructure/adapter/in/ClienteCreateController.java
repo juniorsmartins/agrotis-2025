@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
-@Tag(name = "Clientes", description = "Contém recursos de cadastrar.")
+@Tag(name = "Clientes", description = "Contém recurso de cadastrar.")
 @Slf4j
 @RequiredArgsConstructor
 @RestController
