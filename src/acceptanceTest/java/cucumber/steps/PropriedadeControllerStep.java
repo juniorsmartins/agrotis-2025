@@ -1,9 +1,12 @@
 package cucumber.steps;
 
+import com.agrotis_2025.infrastructure.adapter.in.dto.response.PropriedadeDtoResponse;
 import com.agrotis_2025.infrastructure.adapter.in.filter.PropriedadeFiltroDto;
 import com.agrotis_2025.infrastructure.adapter.out.persistence.ClienteRepository;
 import com.agrotis_2025.infrastructure.adapter.out.persistence.PropriedadeRepository;
 import com.agrotis_2025.infrastructure.adapter.out.persistence.entity.PropriedadeEntity;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import cucumber.config.ConstantsTest;
 import io.cucumber.java.Before;
 import io.cucumber.java.pt.Dado;
@@ -15,6 +18,7 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.data.domain.Page;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -41,9 +45,10 @@ public final class PropriedadeControllerStep {
     @Autowired
     private PropriedadeRepository propriedadeRepository;
 
-    private Response response;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    private PropriedadeFiltroDto propriedadeFiltroDto;
+    private Response response;
 
     @Before
     public void setUp() {
@@ -97,6 +102,19 @@ public final class PropriedadeControllerStep {
     public void receber_resposta_http_do_propriedade_controller(Integer status) {
 
         assertEquals(status, response.getStatusCode());
+    }
+
+    @Entao("a resposta contém apenas propriedades com o nome {string} do PropriedadeController")
+    public void a_resposta_contem_apenas_propriedades_com_o_nome_do_propriedade_controller(String nome) {
+
+        List<PropriedadeDtoResponse> content = response.jsonPath()
+                .getList("content", PropriedadeDtoResponse.class);
+
+        assertThat(content).isNotEmpty();
+        assertThat(content)
+                .allMatch(dto -> dto.nome().equals(nome))
+                .extracting(PropriedadeDtoResponse::nome)
+                .containsOnly(nome);
     }
 }
 

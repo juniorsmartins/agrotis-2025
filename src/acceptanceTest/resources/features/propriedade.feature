@@ -16,4 +16,5 @@ Funcionalidade: testar operações Crud (Create/Post, Read/Get, Update/Put e Del
   Cenario: Get para consultar Propriedade, com sucesso, pelo PropriedadeController
     Quando uma requisição Get for feita, com nome "Fazenda BBB" npo filtro, no método search do PropriedadeController
     Entao receber resposta HTTP 200 do PropriedadeController
+    E a resposta contém apenas propriedades com o nome "Fazenda BBB" do PropriedadeController
 
