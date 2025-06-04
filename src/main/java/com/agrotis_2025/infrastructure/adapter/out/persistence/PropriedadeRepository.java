@@ -9,7 +9,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface PropriedadeRepository extends JpaRepository<PropriedadeEntity, UUID>, JpaSpecificationExecutor<PropriedadeEntity> {
+public interface PropriedadeRepository extends JpaRepository<PropriedadeEntity, UUID>,
+        JpaSpecificationExecutor<PropriedadeEntity> {
 
     Optional<PropriedadeEntity> findByNome(String nome);
 }

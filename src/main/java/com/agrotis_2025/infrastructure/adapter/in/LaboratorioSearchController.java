@@ -1,8 +1,8 @@
 package com.agrotis_2025.infrastructure.adapter.in;
 
-import com.agrotis_2025.application.port.output.PropriedadeSearchOutputPort;
-import com.agrotis_2025.infrastructure.adapter.in.dto.response.PropriedadeDtoResponse;
-import com.agrotis_2025.infrastructure.adapter.in.filter.PropriedadeFiltroDto;
+import com.agrotis_2025.application.port.output.LaboratorioSearchOutputPort;
+import com.agrotis_2025.infrastructure.adapter.in.dto.response.LaboratorioDtoResponse;
+import com.agrotis_2025.infrastructure.adapter.in.filter.LaboratorioFiltroDto;
 import com.agrotis_2025.infrastructure.adapter.in.mapper.RestMapper;
 import com.agrotis_2025.infrastructure.constant.ConstantsController;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,14 +27,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
-@Tag(name = "Propriedades", description = "Contém recurso de pesquisar.")
+@Tag(name = "Laboratórios", description = "Contém recurso de pesquisar.")
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(path = {ConstantsController.URI_PROPRIEDADE})
-public class PropriedadeSearchController {
+@RequestMapping(path = {ConstantsController.URI_LABORATORIO})
+public class LaboratorioSearchController {
 
-    private final PropriedadeSearchOutputPort outputPort;
+    private final LaboratorioSearchOutputPort outputPort;
 
     private final RestMapper mapper;
 
@@ -54,14 +54,14 @@ public class PropriedadeSearchController {
                     )
             }
     )
-    public ResponseEntity<Page<PropriedadeDtoResponse>> search(
-            @Parameter(name = "PropriedadeFiltroDto", description = "Estrutura de dados usada como filtro de pesquisa.", required = false)
-            @Valid final PropriedadeFiltroDto filtroDto,
-            @PageableDefault(sort = "propriedadeId", direction = Sort.Direction.DESC, page = 0, size = 10) final Pageable paginacao) {
+    public ResponseEntity<Page<LaboratorioDtoResponse>> search(
+            @Parameter(name = "LaboratorioFiltroDto", description = "Estrutura de dados usada como filtro de pesquisa.", required = false)
+            @Valid final LaboratorioFiltroDto filtroDto,
+            @PageableDefault(sort = "laboratorioId", direction = Sort.Direction.DESC, page = 0, size = 10) final Pageable paginacao) {
 
         var response = Optional.of(filtroDto)
                 .map(filtro -> outputPort.search(filtro, paginacao))
-                .map(mapper::toPagePropriedadeResponse)
+                .map(mapper::toPageLaboratorioResponse)
                 .orElseThrow();
 
         return ResponseEntity
