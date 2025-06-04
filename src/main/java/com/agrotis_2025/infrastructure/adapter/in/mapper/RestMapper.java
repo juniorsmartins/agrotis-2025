@@ -9,6 +9,7 @@ import com.agrotis_2025.infrastructure.adapter.in.dto.request.PropriedadeDtoRequ
 import com.agrotis_2025.infrastructure.adapter.in.dto.response.ClienteDtoResponse;
 import com.agrotis_2025.infrastructure.adapter.in.dto.response.LaboratorioDtoResponse;
 import com.agrotis_2025.infrastructure.adapter.in.dto.response.PropriedadeDtoResponse;
+import com.agrotis_2025.infrastructure.adapter.out.persistence.entity.LaboratorioEntity;
 import com.agrotis_2025.infrastructure.adapter.out.persistence.entity.PropriedadeEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -30,17 +31,27 @@ public interface RestMapper {
 
     PropriedadeDtoResponse toPropriedadeDtoResponse(Propriedade propriedade);
 
-    PropriedadeDtoResponse toDtoResponse(PropriedadeEntity propriedade);
+    PropriedadeDtoResponse toPropDtoResponse(PropriedadeEntity propriedade);
+
+    LaboratorioDtoResponse toLabDtoResponse(LaboratorioEntity laboratorio);
 
     @Mapping(target = "nome", ignore = true)
     Laboratorio toLaboratorio(LaboratorioDtoRequest dtoRequest);
 
     LaboratorioDtoResponse toLaboratorioDtoResponse(Laboratorio laboratorio);
 
-    default Page<PropriedadeDtoResponse> toPageResponse(Page<PropriedadeEntity> entityPage) {
+    default Page<PropriedadeDtoResponse> toPagePropriedadeResponse(Page<PropriedadeEntity> entityPage) {
         List<PropriedadeDtoResponse> dtos = entityPage.getContent()
                 .stream()
-                .map(this::toDtoResponse)
+                .map(this::toPropDtoResponse)
+                .toList();
+        return new PageImpl<>(dtos, entityPage.getPageable(), entityPage.getTotalElements());
+    }
+
+    default Page<LaboratorioDtoResponse> toPageLaboratorioResponse(Page<LaboratorioEntity> entityPage) {
+        List<LaboratorioDtoResponse> dtos = entityPage.getContent()
+                .stream()
+                .map(this::toLabDtoResponse)
                 .toList();
         return new PageImpl<>(dtos, entityPage.getPageable(), entityPage.getTotalElements());
     }
