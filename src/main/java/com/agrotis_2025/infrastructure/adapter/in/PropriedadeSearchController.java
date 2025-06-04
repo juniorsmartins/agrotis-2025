@@ -1,9 +1,8 @@
 package com.agrotis_2025.infrastructure.adapter.in;
 
-import com.agrotis_2025.application.port.output.ClienteFindByIdOutputPort;
-import com.agrotis_2025.domain.exception.http404.ClienteNotFoundException;
-import com.agrotis_2025.domain.exception.http500.InternalServerProblemException;
-import com.agrotis_2025.infrastructure.adapter.in.dto.response.ClienteDtoResponse;
+import com.agrotis_2025.application.port.output.PropriedadeSearchOutputPort;
+import com.agrotis_2025.infrastructure.adapter.in.dto.response.PropriedadeDtoResponse;
+import com.agrotis_2025.infrastructure.adapter.in.filter.PropriedadeFiltroDto;
 import com.agrotis_2025.infrastructure.adapter.in.mapper.RestMapper;
 import com.agrotis_2025.infrastructure.constant.ConstantsController;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,35 +11,38 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.UUID;
+import java.util.Optional;
 
-@Tag(name = "Clientes", description = "Contém recurso de consultar.")
+@Tag(name = "Propriedades", description = "Contém recurso de pesquisar.")
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(path = {ConstantsController.URI_CLIENTE})
-public class ClienteFindController {
+@RequestMapping(path = {ConstantsController.URI_PROPRIEDADE})
+public class PropriedadeSearchController {
 
-    private final RestMapper restMapper;
+    private final PropriedadeSearchOutputPort outputPort;
 
-    private final ClienteFindByIdOutputPort findByIdOutputPort;
+    private final RestMapper mapper;
 
-    @GetMapping(path = {"/{id}"}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    @Operation(summary = "Consultar", description = "Buscar um recurso por id.",
+    @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
+    @Operation(summary = "Pesquisar", description = "Buscar um recurso por id.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK - requisição bem sucedida e com retorno.",
-                            content = {@Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ClienteDtoResponse.class))}
+                            content = {@Content(mediaType = "application/json")}
                     ),
                     @ApiResponse(responseCode = "400", description = "Bad Request - requisição mal formulada.",
                             content = {@Content(mediaType = "application/json",
@@ -52,17 +54,19 @@ public class ClienteFindController {
                     )
             }
     )
-    public ResponseEntity<ClienteDtoResponse> findById(
-            @Parameter(name = "id", description = "Identificador único do recurso.",
-                    example = "034eb74c-69ee-4bd4-a064-5c4cc5e9e748", required = true)
-            @PathVariable(name = "id") final UUID id) {
+    public ResponseEntity<Page<PropriedadeDtoResponse>> search(
+            @Parameter(name = "PropriedadeFiltroDto", description = "Estrutura de dados usada como filtro de pesquisa.", required = false)
+            @Valid final PropriedadeFiltroDto filtroDto,
+            @PageableDefault(sort = "propriedadeId", direction = Sort.Direction.DESC, page = 0, size = 10) final Pageable paginacao) {
 
-        var cliente = findByIdOutputPort.findById(id);
-        var dtoResponse = restMapper.toResponse(cliente);
+        var response = Optional.of(filtroDto)
+                .map(filtro -> outputPort.search(filtro, paginacao))
+                .map(mapper::toPageResponse)
+                .orElseThrow();
 
         return ResponseEntity
                 .ok()
-                .body(dtoResponse);
+                .body(response);
     }
 }
 
