@@ -18,3 +18,7 @@ Funcionalidade: testar operações Crud (Create/Post, Read/Get, Update/Put e Del
     Entao receber resposta HTTP 200 do LaboratorioController
     E a resposta contém apenas laboratorios com o nome "Laboratorio LLL" do LaboratorioController
 
+  Cenario: Get para consultar Laboratorio, com sucesso, pelo LaboratorioController
+    Quando uma requisição Get for feita, com nome "Laboratorio LLL,Laboratorio OOO" npo filtro, no método search do LaboratorioController
+    Entao receber resposta HTTP 200 do LaboratorioController
+    E a resposta contém apenas laboratorios com o nome "Laboratorio LLL,Laboratorio OOO" do LaboratorioController

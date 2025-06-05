@@ -21,6 +21,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -102,14 +103,16 @@ public final class LaboratorioControllerStep {
     @Entao("a resposta contém apenas laboratorios com o nome {string} do LaboratorioController")
     public void a_resposta_contem_apenas_laboratorios_com_o_nome_do_laboratorio_controller(String nome) {
 
+        var nomesEsperados = Arrays.asList(nome.split(","));
+
         List<LaboratorioDtoResponse> content = response.jsonPath()
                 .getList("content", LaboratorioDtoResponse.class);
 
         assertThat(content).isNotEmpty();
         assertThat(content)
-                .allMatch(dto -> dto.nome().equals(nome))
+                .allMatch(dto -> nomesEsperados.contains(dto.nome()))
                 .extracting(LaboratorioDtoResponse::nome)
-                .containsOnly(nome);
+                .containsOnlyOnceElementsOf(nomesEsperados);
     }
 
 }
